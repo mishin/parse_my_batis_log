@@ -15,15 +15,15 @@ my $parameter_body;
 
 while ( $line = <$file> ) {
 
-	if ( $line =~ $PREPARE_RX ) {
-		print "sql found: " . get_sql_with_comma( $+{sql} ) . "\n";
-		$sql_body = $+{sql};
-	}
-	if ( $line =~ $PARAMETERS_RX && $+{parameters} ne '') {
+	if ( $line =~ $PARAMETERS_RX && $+{parameters} ne '' ) {
 		print "parameter found: $+{parameters}\n";
 		$parameter_body = $+{parameters};
-		if ( defined $parameter_body && $parameter_body ne '') {
+		if ( defined $parameter_body && $parameter_body ne '' ) {
 			say "param";
+		}
+		if ( $line =~ $PREPARE_RX ) {
+			print "sql found: " . get_sql_with_comma( $+{sql} ) . "\n";
+			$sql_body = $+{sql};
 		}
 	}
 
