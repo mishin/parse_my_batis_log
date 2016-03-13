@@ -40,10 +40,14 @@ for my $sql (@big_sql) {
 
 	#	p $sql;
 	if ( defined $sql->{parameter} && $sql->{parameter} ne '' ) {
-		say $sql->{parameter};
+		my @values = split /\s*,\s*/, $sql->{parameter};
+		s /(.*?)\(\w+\)/$1/ for @values;
+		p @values;
+
+		#		say $sql->{parameter};
 	}
 	else {
-		say get_sql_with_comma( $sql->{sql} );
+		#		say get_sql_with_comma( $sql->{sql} );
 	}
 }
 
