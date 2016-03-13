@@ -42,7 +42,7 @@ qr{\[DEBUG\] ==> Parameters:\s*(?<parameters>.*?)\s*\[BaseJdbcLogger.java:\d+\]}
 			my @values = split /\s*,\s*/, $sql->{parameter};
 			for (@values) {
 				s/(.*?)\(\w+\)/$1/;
-s/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.]\d{1})/to_date('$1','yyyy-mm-dd 24hh:mi:ss TZR')/;
+s/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})[.]\d{1}/to_date('$1','YYYY-MM-DD HH24:MI:SS')/;
 			}
 			my $full_sql = get_sql_and_param( $sql->{sql}, \@values );
 			say get_sql_with_comma($full_sql);
