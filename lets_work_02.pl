@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use feature 'say';
+use Data::Printer;
 
 # open my $file, '<', '8882099' or die $!;
 my $file = \*DATA;
@@ -12,23 +13,41 @@ my $PARAMETERS_RX =
 qr{\[DEBUG\] ==> Parameters:\s*(?<parameters>.*?)\s*\[BaseJdbcLogger.java:\d+\]};
 my $sql_body;
 my $parameter_body;
+my @big_sql;
 
 while ( $line = <$file> ) {
-
-	if ( $line =~ $PARAMETERS_RX && $+{parameters} ne '' ) {
-		print "parameter found: $+{parameters}\n";
+	my %loc_sql;
+	if ( $line =~ $PARAMETERS_RX ) {
 		$parameter_body = $+{parameters};
 		if ( defined $parameter_body && $parameter_body ne '' ) {
-			say "param";
+
+			#			print "parameter found: $+{parameters}\n";
 		}
-		if ( $line =~ $PREPARE_RX ) {
-			print "sql found: " . get_sql_with_comma( $+{sql} ) . "\n";
-			$sql_body = $+{sql};
+		if ( defined $sql_body && $sql_body ne '' ) {
+			$loc_sql{sql}       = $sql_body;
+			$loc_sql{parameter} = $parameter_body;
+			push @big_sql, \%loc_sql;
 		}
 	}
+	if ( $line =~ $PREPARE_RX ) {
 
-	# push @sql_for_execute, \%curr_full_sql;
+		#		print "sql found: " . get_sql_with_comma( $+{sql} ) . "\n";
+		$sql_body = $+{sql};
+	}
 }
+
+for my $sql (@big_sql) {
+
+	#	p $sql;
+	if ( defined $sql->{parameter} && $sql->{parameter} ne '' ) {
+		say $sql->{parameter};
+	}
+	else {
+		say get_sql_with_comma( $sql->{sql} );
+	}
+}
+
+#p @big_sql;
 
 sub get_sql_with_comma {
 	my ($sql) = @_;
