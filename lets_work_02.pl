@@ -40,12 +40,12 @@ qr{\[DEBUG\] ==> Parameters:\s*(?<parameters>.*?)\s*\[BaseJdbcLogger.java:\d+\]}
 
 		if ( defined $sql->{parameter} && $sql->{parameter} ne '' ) {
 			my @values = split /\s*,\s*/, $sql->{parameter};
-			s /(.*?)\(\w+\)/$1/ for @values;
-
-			say $sql->{sql};
+			for (@values) {
+				s/(.*?)\(\w+\)/$1/;
+s/(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[.]\d{1})/to_date('$1','yyyy-mm-dd 24hh:mi:ss TZR')/;
+			}
 			my $full_sql = get_sql_and_param( $sql->{sql}, \@values );
-
-			say $full_sql;
+			say get_sql_with_comma($full_sql);
 		}
 		else {
 			say get_sql_with_comma( $sql->{sql} );
@@ -77,7 +77,12 @@ sub get_sql_and_param {
 
 sub make_quote {
 	my ($string) = @_;
-	return "'" . $string . "'";
+	if ( $string =~ /to_date/ ) {
+		return $string;
+	}
+	else {
+		return "'" . $string . "'";
+	}
 }
 
 sub find_nth {
@@ -101,12 +106,12 @@ sub get_sql_with_comma {
 
 __DATA__
 [AspLink-2.00-SNAPSHOT] [INFO] Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener] [AbstractTestContextBootstrapper.java:256] [org.springframework.test.context.support.DefaultTestContextBootstrapper]
-[AspLink-2.00-SNAPSHOT] [INFO] Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@df27fae, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@24a35978, org.springframework.test.context.support.DirtiesContextTestExecutionListener@16f7c8c1, org.springframework.test.context.transaction.TransactionalTestExecutionListener@2f0a87b3, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@319b92f3] [AbstractTestContextBootstrapper.java:182] [org.springframework.test.context.support.DefaultTestContextBootstrapper]
+[AspLink-2.00-SNAPSHOT] [INFO] Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@27d415d9, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@5c18298f, org.springframework.test.context.support.DirtiesContextTestExecutionListener@31f924f5, org.springframework.test.context.transaction.TransactionalTestExecutionListener@5579bb86, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@5204062d] [AbstractTestContextBootstrapper.java:182] [org.springframework.test.context.support.DefaultTestContextBootstrapper]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading XML bean definitions from class path resource [META-INF/spring-asplink-overall-test-config.xml] [XmlBeanDefinitionReader.java:317] [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading XML bean definitions from class path resource [META-INF/spring-asplink-core-config.xml] [XmlBeanDefinitionReader.java:317] [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading XML bean definitions from class path resource [META-INF/spring-asplink-datasource-test-config.xml] [XmlBeanDefinitionReader.java:317] [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading XML bean definitions from class path resource [META-INF/spring-asplink-kie-config.xml] [XmlBeanDefinitionReader.java:317] [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]
-[AspLink-2.00-SNAPSHOT] [INFO] Refreshing org.springframework.context.support.GenericApplicationContext@101df177: startup date [Sun Mar 13 17:39:24 MSK 2016]; root of context hierarchy [AbstractApplicationContext.java:511] [org.springframework.context.support.GenericApplicationContext]
+[AspLink-2.00-SNAPSHOT] [INFO] Refreshing org.springframework.context.support.GenericApplicationContext@77a57272: startup date [Mon Mar 14 02:02:00 MSK 2016]; root of context hierarchy [AbstractApplicationContext.java:511] [org.springframework.context.support.GenericApplicationContext]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading properties file from class path resource [kie.properties] [PropertiesLoaderSupport.java:172] [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer]
 [AspLink-2.00-SNAPSHOT] [INFO] Loading properties file from class path resource [sftp.properties] [PropertiesLoaderSupport.java:172] [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer]
 [AspLink-2.00-SNAPSHOT] [INFO] JSR-330 'javax.inject.Inject' annotation found and supported for autowiring [AutowiredAnnotationBeanPostProcessor.java:153] [org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor]
@@ -126,16 +131,16 @@ __DATA__
 [AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 1 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: delete from DWH_CLIENT  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
-[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 0 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
+[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 3 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: delete from DWH_CLIENT_PORTFOLIO_HOLDING  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
-[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 0 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
+[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 3 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: delete from DWH_SECURITY_SUB_ASSET_CLASS  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 0 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: delete from DWH_OPERATION_TYPE  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
-[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 1 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
+[AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 3 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: delete from DWH_MODEL_PORTFOLIO_STRUCTURE  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
 [AspLink-2.00-SNAPSHOT] [DEBUG] <==    Updates: 0 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.clearTable]
@@ -283,4 +288,4 @@ __DATA__
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==>  Preparing: select count(*) cnt from (( select 1, 'a3', 1 from dual union all select 2, 'b2', 0 from dual union all select 3, 'c1', 0 from dual union all select 4, 'f1', 0 from dual ) minus select "OPERATIONTYPEID" , "CODE" , "SRC_ID" from ASPL_OPERATION_TYPE)  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.compareDataSet]
 [AspLink-2.00-SNAPSHOT] [DEBUG] ==> Parameters:  [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.compareDataSet]
 [AspLink-2.00-SNAPSHOT] [DEBUG] <==      Total: 1 [BaseJdbcLogger.java:142] [ru.masterdm.asplink.dao.TestDao.compareDataSet]
-[AspLink-2.00-SNAPSHOT] [INFO] Closing org.springframework.context.support.GenericApplicationContext@101df177: startup date [Sun Mar 13 17:39:24 MSK 2016]; root of context hierarchy [AbstractApplicationContext.java:866] [org.springframework.context.support.GenericApplicationContext]
+[AspLink-2.00-SNAPSHOT] [INFO] Closing org.springframework.context.support.GenericApplicationContext@77a57272: startup date [Mon Mar 14 02:02:00 MSK 2016]; root of context hierarchy [AbstractApplicationContext.java:866] [org.springframework.context.support.GenericApplicationContext]
