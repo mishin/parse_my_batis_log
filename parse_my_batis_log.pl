@@ -7,12 +7,13 @@ use open qw(:std :utf8);
 #use v5.10;
 use Data::Printer;
 
-my $filename = shift or die "Usage: $0 name_of_my_batis.log\n";
+my $filename = shift or die "Usage: $0 name_of_my_batis.log name_of_my_batis.sql\n";
+my $write_filename = shift;
 
-main($filename);
+main($filename, $write_filename);
 
 sub main {
-	my ($filename) = @_;
+	my ($filename, $write_filename) = @_;
 	my $PREPARE_RX =
 	  qr{\[DEBUG\] ==>  Preparing:\s*(?<sql>.*?)\s*\[BaseJdbcLogger.java:\d+\]};
 	my $PARAMETERS_RX =
@@ -22,18 +23,22 @@ qr{\[DEBUG\] ==> Parameters:\s*(?<parameters>.*?)\s*\[BaseJdbcLogger.java:\d+\]}
 
 	open( my $fh, '<:encoding(UTF-8)', $filename )
 	  or die "Could not open file '$filename' $!";
+    open(my $fho, '>:encoding(UTF-8)', $write_filename)
+	  or die "Could not open file '$write_filename'";
 	for my $line (<$fh>) {
 		my %loc_sql;
 		if ( $line =~ $PARAMETERS_RX ) {
 			$parameter_body = $+{parameters};
 			if ( defined $sql_body && $sql_body ne '' ) {
-				say get_full_sql( $sql_body, $parameter_body );
+				print $fho get_full_sql( $sql_body, $parameter_body ). "\n";
 			}
 		}
 		if ( $line =~ $PREPARE_RX ) {
 			$sql_body = $+{sql};
 		}
 	}
+	close $fho;
+	close $fh;
 }
 
 sub get_full_sql {
